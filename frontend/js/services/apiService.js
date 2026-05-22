@@ -6,7 +6,9 @@
 */
 
 // Configuración base de la API
-const API_URL = "http://localhost:3000/api";
+// const API_URL = "http://localhost:3000/api"; //esta url no funciona porq lo levantas en codespace
+const API_URL = "/api";
+
 
 const apiService = {
     // Función centralizada para peticiones Fetch
