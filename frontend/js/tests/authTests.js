@@ -1,11 +1,11 @@
 /**
  * Test: POST /api/auth/login
  */
- testUtils.createTestButton("Test Login Correcto (Pepe y 123456)", async (btn) => {
+ testUtils.createTestButton("Test Login Correcto (Pepe y 12345)", async (btn) => {
     const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: 'pepe', password: '123456' }) // Usamos pepe hardcodeado
+        body: JSON.stringify({ username: 'pepe', password: '12345' }) // Usamos pepe hardcodeado
     });
     
     const data = await response.json();
