@@ -65,12 +65,21 @@ function renderSamplesTable(samples) {
 
 async function deleteSample(id) {
     if (!confirm('¿Estás seguro de eliminar este sonido?')) return;
+
     try {
         await apiService.request(`/samples/${id}`, 'DELETE');
-        showModal('Eliminado', 'El sample ha sido borrado.');
+        showModal('Éxito', 'El sample ha sido borrado de forma definitiva.');
         loadSamples();
     } catch (error) {
-        showModal('Error, No tienes permisos para alterar este archivo', error.message);
+        // Evaluamos el código de estado HTTP devuelto por el servidor
+        if (error.status === 403 || error.status === 404) {
+            showModal('Error', 'No tienes permisos para alterar este archivo.');
+        } else if (error.status === 401) {
+            showModal('Sesión Expirada', 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.');
+        } else {
+            // Manejo genérico para caídas de servidor (500) o problemas de red
+            showModal('Error Inesperado', 'Ocurrió un problema en el servidor: ' + error.message);
+        }
     }
 }
 
