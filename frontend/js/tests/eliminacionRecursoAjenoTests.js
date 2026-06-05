@@ -40,7 +40,8 @@ testUtils.createTestButton('Test seguridad: Eliminar Sample Ajeno (403/404)', as
     const token = localStorage.getItem('test_token2');
 
     // ID ajeno hardcodeado para la prueba de vulnerabilidad IDOR
-    const idAjeno = 3; 
+    co
+    nst idAjeno = 1; 
 
     // 3. Forzar el DELETE utilizando concatenación tradicional
     const responseDelete = await fetch('/api/samples/' + idAjeno, {
