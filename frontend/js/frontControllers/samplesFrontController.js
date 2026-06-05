@@ -70,7 +70,7 @@ async function deleteSample(id) {
         showModal('Eliminado', 'El sample ha sido borrado.');
         loadSamples();
     } catch (error) {
-        showModal('Error', error.message);
+        showModal('Error, No tienes permisos para alterar este archivo', error.message);
     }
 }
 
