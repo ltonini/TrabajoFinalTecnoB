@@ -63,8 +63,11 @@ const fileFilter = (req, file, cb) => {
 };
 //----------------------------------------------------
 
-const upload = multer({ storage, fileFilter });
+const upload = multer({ 
+    storage: storage, 
+    fileFilter: fileFilter 
+});
 
-// 'audioFile' es el nombre del campo en el formulario
-module.exports = upload.single('audioFile');
+// EXPORTAMOS EL OBJETO COMPLETO, NO LA EJECUCIÓN
+module.exports = upload;
 

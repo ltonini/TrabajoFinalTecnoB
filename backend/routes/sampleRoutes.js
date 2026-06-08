@@ -21,7 +21,22 @@ router.use(verifyToken);
 // 1. Subir un nuevo audio: POST /api/samples/upload
 // Le pasamos upload.single('audioFile') directamente. 
 // Si salta nuestra alerta de virus, Express la enviará automáticamente al server.js
-router.post('/upload', upload.single('audioFile'), sampleController.uploadSample);
+
+router.post('/upload', verifyToken, (req, res, next) => {
+    upload.single('audioFile')(req, res, (err) => {
+        if (err) {
+            // Si es nuestro error de MIME
+            if (err.code === 'INVALID_MIME_TYPE') {
+                return res.status(415).json({ message: err.message });
+            }
+            // Si es cualquier otro error de Multer (ej: límite de peso)
+            return res.status(400).json({ message: err.message });
+        }
+        // Si no hay error, pasamos al controlador
+        next();
+    });
+}, sampleController.uploadSample);
+
 
 // 2. Listar mis samples: GET /api/samples/my-samples
 router.get('/my-samples', sampleController.getMySamples);

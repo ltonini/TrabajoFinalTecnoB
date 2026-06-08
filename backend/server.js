@@ -91,7 +91,16 @@ else
 
 // --- Manejo de errores global ---
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    // console.error(err.stack); ESTO ANDABA
+//NUEVO JOACO
+    console.error("--- ERROR ATRAPADO ---");
+    console.error("Nombre:", err.name);
+    console.error("Código:", err.code);
+    console.error("Mensaje:", err.message);    
+    // Si ya enviamos una respuesta en el router (como el 415), no enviamos nada aquí
+    if (res.headersSent) return next(err);
+//-----
+
     res.status(500).json({ message: "Error en el servidor", error: err.message });
 });
 
