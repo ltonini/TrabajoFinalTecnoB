@@ -29,19 +29,42 @@ const storage = multer.diskStorage({
 });
 
 // Filtro para aceptar solo formatos de audio compatibles con HTML5
+//COMENTO EL const fileFilter para reemplazarl por el mio
+// const fileFilter = (req, file, cb) => {
+//     const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/flac'];
+//     if (allowedTypes.includes(file.mimetype))
+//     {
+//         cb(null, true);
+//     }
+//     else
+//     {
+//         cb(new Error('Invalid file type. Only MP3, WAV, OGG and FLAC are allowed.'), false);
+//     }
+// };
+//JOACO: codigo para validacion de archivo malisioso:
 const fileFilter = (req, file, cb) => {
+    // Definimos la lista blanca (Whitelisting) de tipos MIME seguros
     const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/flac'];
-    if (allowedTypes.includes(file.mimetype))
-    {
+    
+    // EXPLICACIÓN DE LA VALIDACIÓN:
+    // Multer lee el 'mimetype' de las cabeceras HTTP de la petición entrante.
+    // Si el tipo no coincide con nuestra lista de audios, bloqueamos la subida
+    // llamando al callback (cb) con un Error antes de que se guarde en el disco.
+    if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
-    }
-    else
-    {
-        cb(new Error('Invalid file type. Only MP3, WAV, OGG and FLAC are allowed.'), false);
+    } else {
+        // EXPLICACIÓN DEL CÓDIGO DE ERROR:
+        // Le inyectamos una propiedad custom (.code) al objeto Error.
+        // Esto nos permitirá identificar exactamente ESTE error en el archivo de rutas.
+        const error = new Error('Tipo de archivo no soportado. Riesgo de Spoofing detectado.');
+        error.code = 'INVALID_MIME_TYPE';
+        cb(error, false);
     }
 };
+//----------------------------------------------------
 
 const upload = multer({ storage, fileFilter });
 
 // 'audioFile' es el nombre del campo en el formulario
 module.exports = upload.single('audioFile');
+
