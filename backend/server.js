@@ -91,7 +91,7 @@ else
 
 // --- Manejo de errores global ---
 app.use((err, req, res, next) => {
-    // console.error(err.stack); ESTO ANDABA
+    console.error(err.stack);
 //NUEVO JOACO
     console.error("--- ERROR ATRAPADO ---");
     console.error("Nombre:", err.name);
