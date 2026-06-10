@@ -28,7 +28,15 @@ class AuthController
             if (!username || !password) {
                 return res.status(400).json({ message: "Usuario y contraseña son requeridos." });
             }
+            //--------------------------------------------
+            // JOACO validacion de longitud
 
+            if (password.length < 6) {
+                // Al hacer 'return', cortamos la ejecución (Fallo Rápido)
+                return res.status(400).json({ message: "La contraseña es demasiado corta" });
+            }
+            //--------------------------------------------
+            //si la contraseña pasa el filtro encriptamos
             const hashedPassword = await bcrypt.hash(password, 10);            
             
             // 2. Creación mediante el repositorio (que usa el SP sp_create_user)
