@@ -68,6 +68,14 @@ const upload = multer({
     fileFilter: fileFilter 
 });
 
-// EXPORTAMOS EL OBJETO COMPLETO, NO LA EJECUCIÓN
-module.exports = upload;
+// const upload = multer({ storage, fileFilter });
+
+// Instanciamos multer pasándole el storage, el filtro y el límite de peso
+const upload = multer({ 
+    storage, 
+    fileFilter,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5 MB expresados en bytes (5 * 1024 KB * 1024 B)
+    }
+});
 
