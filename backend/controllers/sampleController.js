@@ -11,25 +11,39 @@ const sampleRepo = require('../repositories/sampleRepo');
 class SampleController 
 {
     // Método para subir un sample y guardarlo en la BD
-    async uploadSample(req, res) 
+   async uploadSample(req, res) 
     {
         try
         {
-            // 1. Validación de archivo y datos obligatorios
-            if (!req.file)
-            {
+            if (!req.file) {
                 return res.status(400).json({ message: "No se subió ningún archivo o el formato es inválido." });
             }
 
             const { display_name, category, bpm } = req.body;
             
             if (!display_name || !category) {
-                // Si faltan datos, eliminamos el archivo físico para no dejar basura (Storage Efficiency)
                 fileHelper.deleteFile(`/uploads/${req.file.filename}`);
                 return res.status(400).json({ message: "El nombre y la categoría son obligatorios." });
             }
 
             const userId = req.userId; // Proveniente del verifyToken
+
+            // ==============================================
+            // NUEVA VALIDACIÓN: LÍMITE DE CUOTA (ANTI-ABUSO)
+            // ==============================================
+            // Consultamos a la DB cuántos samples ya posee este usuario
+            const userSamples = await sampleRepo.findByUserId(userId);
+            
+            if (userSamples.length >= 10) {     //Colocamos 10 arbitrariamente como un ejemplo facil de mostrar y llegar
+                // Borramos INMEDIATAMENTE el archivo físico que Multer guardó temporalmente
+                fileHelper.deleteFile(`/uploads/${req.file.filename}`);
+                // HTTP 403 Forbidden: Entiende quién eres pero te niega la acción
+                return res.status(403).json({ 
+                    message: "Has alcanzado el límite máximo de 10 sonidos por cuenta en esta versión gratuita." 
+                });
+            }
+            // ==========================================
+
             const filename = req.file.filename;
             const filePath = `/uploads/${filename}`;
 
@@ -51,9 +65,7 @@ class SampleController
         }
         catch (error)
         {
-            // En caso de error de DB, intentar limpiar el archivo físico
             if (req.file) fileHelper.deleteFile(`/uploads/${req.file.filename}`);
-            
             res.status(500).json({ message: "Error durante la carga del sample.", error: error.message });
         }
     }
